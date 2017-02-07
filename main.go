@@ -117,7 +117,7 @@ func getInteger(prompt string) int {
 		valid = false
 	}
 	for valid == false {
-		fmt.Print("Can't convert your answer into an integer. ")
+		fmt.Println("Can't convert your answer into an integer.")
 		input = getString(prompt)
 		integer, err = strconv.Atoi(input)
 		if err == nil {
@@ -134,7 +134,7 @@ func getBet(wallet *float64) int {
 	valid := false
 	for valid == false {
 		valid = true
-		bet = getInteger("How much would you like to bet ($5 increments)?")
+		bet = getInteger("How much would you like to bet ($5 increments)? ")
 		if bet < 5 {
 			valid = false
 		}
@@ -279,11 +279,15 @@ func main() {
 
 	// While the player still has enough money for one bet
 	for wallet > 5.0 {
+		fmt.Println("=============================================================")
 		// Minimum number of cards to play a hand from a single deck in worst case
+		fmt.Printf("%d cards left in the deck.\n", d.CardsLeft())
 		if d.CardsLeft() < 17 {
 			// If there's less than 17, you must shuffle the deck.
+			fmt.Println("Shuflling deck...")
 			d.Initialize()
 			d.Shuffle()
+			fmt.Printf("%d Cards left in the deck.\n", d.CardsLeft())
 		}
 		fmt.Printf("You have %.2f in your wallet.\n", wallet)
 		bet = getBet(&wallet)
