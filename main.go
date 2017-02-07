@@ -1,7 +1,7 @@
 /*
 Blackjack
 
-1 Player Simple Blackjack
+One Player Simple Blackjack
 	* Hit and Stand only, (no double, split or insurance)
 	* Dealer stands on soft 17
 
@@ -99,17 +99,17 @@ import (
 	"github.com/nleskiw/goplaycards/deck"
 )
 
+// getString gets an arbitrary string from the user with a prompt.
 func getString(prompt string) string {
-	// Gets an arbitrary string from the user with a prompt.
 	fmt.Print(prompt)
 	var input string
 	fmt.Scanln(&input)
 	return input
 }
 
+// getInteger gets an arbitrary int from the user with a prompt.
+// Retries until a valid integer is entered.
 func getInteger(prompt string) int {
-	// Gets an arbitrary int from the user with a prompt.
-	// Retries until a valid integer is entered.
 	valid := true
 	input := getString(prompt)
 	integer, err := strconv.Atoi(input)
@@ -127,9 +127,9 @@ func getInteger(prompt string) int {
 	return integer
 }
 
+// getBet gets an amount from user and removes the bet from the wallet
+// Retries until a valid bet is entered.
 func getBet(wallet *float64) int {
-	// Inputs bet from user and removes the bet from the wallet
-	// Retries until a valid bet is entered.
 	bet := 0
 	valid := false
 	for valid == false {
@@ -152,6 +152,8 @@ func getBet(wallet *float64) int {
 	return bet
 }
 
+// getPlayerAction determines what the player will do
+// TODO: Implement Double and Split
 func getPlayerAction() string {
 	validInput := false
 	input := ""
@@ -172,6 +174,7 @@ func getPlayerAction() string {
 	return input
 }
 
+// handTotal returns the numerical value of a Blackjack hand
 func handTotal(hand []deck.Card) int {
 	total := 0
 	numberOfAces := 0
@@ -258,7 +261,16 @@ func printDealerHand(hand []deck.Card, hideFirst bool) {
 	}
 }
 
+func printLicense() {
+	fmt.Println("goplaycards Copyright (C) 2017  Nicholas Leskiw")
+	fmt.Println("This program comes with ABSOLUTELY NO WARRANTY; for details please visit")
+	fmt.Println("<https://www.gnu.org/licenses/gpl-3.0.txt>")
+	fmt.Println("This is free software, and you are welcome to redistribute it")
+	fmt.Printf("under certain conditions. Please see the GPLv3 license at the URL listed above.\n\n")
+}
+
 func main() {
+	printLicense()
 	wallet := 100.00
 	bet := 0
 	var d deck.Deck
