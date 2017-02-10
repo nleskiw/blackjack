@@ -93,11 +93,30 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	//"os"
+	"math"
 	"strconv"
 
 	"github.com/nleskiw/goplaycards/deck"
 )
+
+const (
+	noDefaultValue = math.MaxInt8
+)
+
+// getStringAndValidate returns any allowed string passed as argument
+func getStringAndValidate(prompt string, validInput []string) string {
+	for {
+		input := strings.ToLower(getString(prompt))
+		for i := range validInput {
+			s := strings.Split(validInput[i], "_")
+			if input == s[0] || input == s[1] {
+				return s[0]
+			}
+		}
+	}
+}
 
 // getString gets an arbitrary string from the user with a prompt.
 func getString(prompt string) string {
@@ -109,22 +128,17 @@ func getString(prompt string) string {
 
 // getInteger gets an arbitrary int from the user with a prompt.
 // Retries until a valid integer is entered.
-func getInteger(prompt string) int {
-	valid := true
-	input := getString(prompt)
-	integer, err := strconv.Atoi(input)
-	if err != nil {
-		valid = false
-	}
-	for valid == false {
-		fmt.Println("Can't convert your answer into an integer.")
-		input = getString(prompt)
-		integer, err = strconv.Atoi(input)
+func getInteger(prompt string, defaultValue int) int {
+	for {
+		input := getString(prompt)
+		if input == "" && defaultValue != noDefaultValue {
+			return defaultValue
+		}
+		number, err := strconv.Atoi(input)
 		if err == nil {
-			valid = true
+			return number
 		}
 	}
-	return integer
 }
 
 // getBet gets an amount from user and removes the bet from the wallet
@@ -134,7 +148,7 @@ func getBet(wallet *float64) int {
 	valid := false
 	for valid == false {
 		valid = true
-		bet = getInteger("How much would you like to bet ($5 increments)? ")
+		bet = getInteger("How much would you like to bet [5]? ", 5)
 		if bet < 5 {
 			valid = false
 		}
@@ -155,23 +169,8 @@ func getBet(wallet *float64) int {
 // getPlayerAction determines what the player will do
 // TODO: Implement Double and Split
 func getPlayerAction() string {
-	validInput := false
-	input := ""
-	for validInput == false {
-		input = getString("[H]it or [S]tand? ")
-		if input == "hit" || input == "Hit" || input == "H" || input == "h" {
-			validInput = true
-			input = "H"
-		}
-		if input == "stand" || input == "Stand" || input == "S" || input == "s" {
-			validInput = true
-			input = "S"
-		}
-		if validInput == false {
-			fmt.Println("Invalid option. H to Hit or S to Stand. ")
-		}
-	}
-	return input
+	valid := []string{"h_hit", "s_stand"}
+	return getStringAndValidate("[H]it or [S]tand? ", valid)
 }
 
 // handTotal returns the numerical value of a Blackjack hand
@@ -262,7 +261,7 @@ func printDealerHand(hand []deck.Card, hideFirst bool) {
 }
 
 func printLicense() {
-	fmt.Println("goplaycards Copyright (C) 2017  Nicholas Leskiw")
+	fmt.Println("goblackjack Copyright (C) 2017  Nicholas Leskiw")
 	fmt.Println("This program comes with ABSOLUTELY NO WARRANTY; for details please visit")
 	fmt.Println("<https://www.gnu.org/licenses/gpl-3.0.txt>")
 	fmt.Println("This is free software, and you are welcome to redistribute it")
@@ -333,19 +332,20 @@ func main() {
 			printPlayerHand(playerHand)
 			printDealerHand(dealerHand, true)
 			action := getPlayerAction()
-			if action == "H" {
+			if action == "h" {
 				drawnCards, err := d.Draw(1)
 				if err != nil {
 					panic(err)
 				}
 				playerHand = append(playerHand, drawnCards[0])
+				fmt.Printf("You got %s\n", drawnCards[0].ToStr())
 				if isBust(playerHand) {
 					printPlayerHand(playerHand)
 					fmt.Println("Bust")
 					playerDone = true
 				}
 			}
-			if action == "S" {
+			if action == "s" {
 				playerDone = true
 			}
 		}
