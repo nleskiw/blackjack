@@ -106,6 +106,9 @@ const (
 )
 
 // getStringAndValidate returns any allowed string passed as argument
+// it is expected that validInput contains a list of string with the
+// following format: "v_value". This function will accept "v" or "value"
+// as input data and will return the first portion, "v" in this case.
 func getStringAndValidate(prompt string, validInput []string) string {
 	for {
 		input := strings.ToLower(getString(prompt))
